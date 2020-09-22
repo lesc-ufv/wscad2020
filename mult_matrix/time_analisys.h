@@ -12,4 +12,6 @@ void time_end() {
   cudaEventRecord(stop, 0);                          //# insere na fila
   cudaEventSynchronize(stop);                        //# espera terminar
   cudaEventElapsedTime(&elapsed_time, start, stop);  //# calcula
+  	
+
 }

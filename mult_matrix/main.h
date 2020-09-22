@@ -6,8 +6,6 @@ int main(int argc, char* argv[]) {
     cudaSetDevice(0);
     
     //clock_t time_clock;
-
-	vector<int> time_gpu;
 	
 	for (int i = 0; i < results.size(); ++i) {
 	
@@ -74,11 +72,14 @@ int main(int argc, char* argv[]) {
 		cudaEventCreate(&start);                          
 		cudaEventCreate(&stop);                          
 		cudaEventRecord(start);
+		time_clock = clock(); 
 		matrixMul_naive<<<blocks, threads>>>(d_naive, d_a, d_b, N);
 		cudaDeviceSynchronize();
 		cudaEventRecord(stop);                        
 		cudaEventSynchronize(stop);                        
-		cudaEventElapsedTime(&elapsed_time, start, stop);  
+		cudaEventElapsedTime(&elapsed_time, start, stop); 
+		cudaEventDestroy(	start ); 	
+  		cudaEventDestroy(	stop );  
 		
 		cudaMemcpy(h_naive, d_naive, bytes, cudaMemcpyDeviceToHost);
 		printf("Time GPU naive: %7.2lf ms\n", elapsed_time);

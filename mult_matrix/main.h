@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
 	for (int i = 0; i < results.size(); ++i) {
 	
 		int N = results[i];
-		elapsed_time = 0.0
+		elapsed_time = 0.0;
 
 		size_t bytes = N * N * sizeof(float);
 

@@ -13,18 +13,14 @@ int main(int argc, char* argv[]) {
 
 	ofstream myfile;
 	myfile.open ("results_matrix.csv");
-
-	for (int i = 0; i < results.size(); ++i) {
-		myfile << results[i];
-		if (i == results.size()-1) myfile << "\n";
-		else myfile << ",";
-	}
     
     //clock_t time_clock;
 	
 	for (int i = 0; i < results.size(); ++i) {
 	
 		int N = results[i];
+
+		myfile << results[i] << ",";
 
 		size_t bytes = N * N * sizeof(float);
 

@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
 		cudaEventCreate(&start);                          
 		cudaEventCreate(&stop);                          
 		cudaEventRecord(start);
-		time_clock = clock(); 
+		//time_clock = clock(); 
 		matrixMul_naive<<<blocks, threads>>>(d_naive, d_a, d_b, N);
 		cudaDeviceSynchronize();
 		cudaEventRecord(stop);                        

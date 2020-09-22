@@ -1,6 +1,3 @@
-#ifndef _MAIN_H
-#define _MAIN_H
-
 int main(int argc, char* argv[]) { 
 
     cudaDeviceProp deviceProp;
@@ -13,6 +10,7 @@ int main(int argc, char* argv[]) {
 	for (int i = 0; i < results.size(); ++i) {
 	
 		int N = results[i];
+		elapsed_time = 0.0
 
 		size_t bytes = N * N * sizeof(float);
 
@@ -63,7 +61,7 @@ int main(int argc, char* argv[]) {
 
 		printf("Blocks: %d\nThreads/blocks: %d\nThreads(total): %d\n\n", BLOCKS, THREADS, THREADS*BLOCKS);
 
-		printf("Time cpu:       %.2lf ms\n", time_cpu);
+		//printf("Time cpu:       %.2lf ms\n", time_cpu);
 
 		printf("Size: %dx%d\n", N);
 
@@ -96,4 +94,3 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-#endif

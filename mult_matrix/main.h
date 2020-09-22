@@ -14,6 +14,8 @@ int main(int argc, char* argv[]) {
 	
 	for (int i = 0; i < results.size(); ++i) {
 	
+		int N = results[i];
+
 		size_t bytes = N * N * sizeof(float);
 
 		printf("Ocupação tamanho da Matriz %d\n", bytes);

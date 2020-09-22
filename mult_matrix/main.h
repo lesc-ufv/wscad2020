@@ -46,10 +46,10 @@ int main(int argc, char* argv[]) {
 		cudaMemcpy(d_tiled, h_tiled, bytes, cudaMemcpyHostToDevice);
 
 		// cpu execution
-		time_clock = clock(); 
-		cpu_mmatrix(h_cpu, h_a, h_b, N);
-		time_clock = clock() - time_clock;
-		time_cpu = 1000*((float)time_clock) / CLOCKS_PER_SEC;
+		//time_clock = clock(); 
+		//cpu_mmatrix(h_cpu, h_a, h_b, N);
+		//time_clock = clock() - time_clock;
+		//time_cpu = 1000*((float)time_clock) / CLOCKS_PER_SEC;
 
 		// Threads per CTA dimension
 		int THREADS = 32;
@@ -64,6 +64,8 @@ int main(int argc, char* argv[]) {
 		printf("Blocks: %d\nThreads/blocks: %d\nThreads(total): %d\n\n", BLOCKS, THREADS, THREADS*BLOCKS);
 
 		printf("Time cpu:       %.2lf ms\n", time_cpu);
+
+		printf("Size: %dx%d\n", N);
 
 		//# Launch kernel Naive
 		time_start(); 
@@ -83,8 +85,10 @@ int main(int argc, char* argv[]) {
 		cudaMemcpy(h_tiled, d_tiled, bytes, cudaMemcpyDeviceToHost);
 		printf("Time GPU tiled: %7.2lf ms\n", elapsed_time);
 
-		checkResults(h_cpu, h_naive, N*N);
-		checkResults(h_cpu, h_tiled, N*N);
+		//checkResults(h_cpu, h_naive, N*N);
+		//checkResults(h_cpu, h_tiled, N*N);
+		
+		
 		
 		free(h_cpu); free(h_tiled); free(h_naive); free(h_a); free(h_b); 
     	cudaFree(d_naive); cudaFree(d_tiled); cudaFree(d_a); cudaFree(d_b);

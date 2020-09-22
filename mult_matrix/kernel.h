@@ -24,8 +24,6 @@ __global__ void matrixMul_naive(float *c, float *a, float *b, int n) {
   }
 }
 
-const int SHMEM_SIZE = N;
-
 __global__ void matrixMul_tiled(float *c, float *a, float *b, int n) {
   // Compute each thread's global row and column index
   int row = blockIdx.y * blockDim.y + threadIdx.y;

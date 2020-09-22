@@ -9,6 +9,9 @@ int main(int argc, char* argv[]) {
 	
 	for (int i = 0; i < results.size(); ++i) {
 	
+		float elapsed_time;
+		cudaEvent_t start, stop;
+	
 		int N = results[i];
 
 		size_t bytes = N * N * sizeof(float);
@@ -63,23 +66,33 @@ int main(int argc, char* argv[]) {
 
 		//printf("Time cpu:       %.2lf ms\n", time_cpu);
 
-		printf("Size: %dx%d\n", N);
+		printf("Size: %dx%d\n", N, N);
 
 		//# Launch kernel Naive
-		time_start(); 
+		cudaEventCreate(&start);                          
+		cudaEventCreate(&stop);                          
+		cudaEventRecord(start, 0);
 		matrixMul_naive<<<blocks, threads>>>(d_naive, d_a, d_b, N);
 		cudaDeviceSynchronize();
-		time_end();
+		cudaEventRecord(stop, 0);                        
+		cudaEventSynchronize(stop);                        
+		cudaEventElapsedTime(&elapsed_time, start, stop);  
+		
 		cudaMemcpy(h_naive, d_naive, bytes, cudaMemcpyDeviceToHost);
 		printf("Time GPU naive: %7.2lf ms\n", elapsed_time);
 
 		int SHMEM_SIZE = N;
 
 		//# Launch kernel Tiled
-		time_start(); 
+		cudaEventCreate(&start);                          
+		cudaEventCreate(&stop);                          
+		cudaEventRecord(start, 0);
 		matrixMul_tiled<<<blocks, threads, SHMEM_SIZE>>>(d_tiled, d_a, d_b, N);
 		cudaDeviceSynchronize();
-		time_end();
+		cudaEventRecord(stop, 0);                        
+		cudaEventSynchronize(stop);                        
+		cudaEventElapsedTime(&elapsed_time, start, stop); 
+		
 		cudaMemcpy(h_tiled, d_tiled, bytes, cudaMemcpyDeviceToHost);
 		printf("Time GPU tiled: %7.2lf ms\n", elapsed_time);
 
@@ -89,7 +102,6 @@ int main(int argc, char* argv[]) {
 		//free(h_cpu);
 		free(h_tiled); free(h_naive); free(h_a); free(h_b); 
     	cudaFree(d_naive); cudaFree(d_tiled); cudaFree(d_a); cudaFree(d_b); 
-		
 	}
 	
     return 0;

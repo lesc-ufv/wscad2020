@@ -98,8 +98,8 @@ int main(int argc, char* argv[]) {
 		cudaEventElapsedTime(&elapsed_time, start, stop); 
 		*/
 		
-		cudaMemcpy(h_tiled, d_tiled, bytes, cudaMemcpyDeviceToHost);
-		printf("Time GPU tiled: %7.2lf ms\n", elapsed_time);
+		//cudaMemcpy(h_tiled, d_tiled, bytes, cudaMemcpyDeviceToHost);
+		//printf("Time GPU tiled: %7.2lf ms\n", elapsed_time);
 
 		//checkResults(h_cpu, h_naive, N*N);
 		//checkResults(h_cpu, h_tiled, N*N);

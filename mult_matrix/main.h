@@ -13,11 +13,7 @@ int main(int argc, char* argv[]) {
 
 	ofstream myfile;
 	myfile.open ("results_matrix.csv");
-    
-    for (int i = 0; i < 2; ++i) {
-		myfile << i << ",";
-	}
-	myfile << 2 << "\n";
+	myfile << "size" << ",Naive" << "Tiled\n";
 	
 	for (int i = 0; i < results.size(); ++i) {
 	

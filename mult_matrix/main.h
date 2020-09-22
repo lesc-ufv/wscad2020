@@ -1,7 +1,7 @@
-int main(int argc, char* argv[]) {
+#ifndef _MAIN_H
+#define _MAIN_H
 
-    int deviceId, numberOfSMs;
-    clock_t start, end; 
+int main(int argc, char* argv[]) { 
 
     cudaDeviceProp deviceProp;
     cudaGetDeviceProperties(&deviceProp, 0);
@@ -14,11 +14,11 @@ int main(int argc, char* argv[]) {
 
 		size_t bytes = N * N * sizeof(float);
 
-		printf("Ocupação tamanho da Matriz %d\n", bytes);
+		printf("Ocupação tamanho da Matriz %ld\n", bytes);
 
 		float *h_a, *h_b, *h_cpu, *h_naive, *h_tiled;
 		float *d_a, *d_b, *d_naive, *d_tiled;
-		float time_cpu, time_gpu_naive, time_gpu_tiled;
+		float time_cpu;
 
 		h_a = (float*) malloc(bytes);
 		h_b = (float*) malloc(bytes);
@@ -90,3 +90,5 @@ int main(int argc, char* argv[]) {
     
     return 0;
 }
+
+#endif

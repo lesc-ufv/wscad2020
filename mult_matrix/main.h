@@ -79,8 +79,6 @@ int main(int argc, char* argv[]) {
 		cudaEventRecord(stop);                        
 		cudaEventSynchronize(stop);                        
 		cudaEventElapsedTime(&elapsed_time, start, stop); 
-		cudaEventDestroy(	start ); 	
-  		cudaEventDestroy(	stop );  
 		
 		cudaMemcpy(h_naive, d_naive, bytes, cudaMemcpyDeviceToHost);
 		printf("Time GPU naive: %7.2lf ms\n", elapsed_time);

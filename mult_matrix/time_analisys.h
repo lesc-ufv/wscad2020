@@ -1,3 +1,6 @@
+#ifndef __TIME_ANALISYS__H
+#define __TIME_ANALISYS__H
+
 float elapsed_time;
 cudaEvent_t _start, _stop;                             //# Declara dois eventos
 
@@ -12,3 +15,5 @@ void time_end() {
   cudaEventSynchronize(_stop);                        //# espera terminar
   cudaEventElapsedTime(&elapsed_time, _start, _stop);  //# calcula
 }
+
+#endif

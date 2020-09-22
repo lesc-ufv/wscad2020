@@ -1,3 +1,6 @@
+#ifndef __INCLUDE__H
+#define __INCLUDE__H
+
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,3 +12,5 @@ using namespace std;
 #include "kernel.h"
 #include "time_analisys.h"
 #include "verify.h"
+
+#endif

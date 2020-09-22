@@ -5,7 +5,7 @@ int main(int argc, char* argv[]) {
     printf("device %d: %s \n", 0, deviceProp.name);
     cudaSetDevice(0);
     
-    clock_t time_clock;
+    //clock_t time_clock;
 	
 	for (int i = 0; i < results.size(); ++i) {
 	
@@ -14,10 +14,11 @@ int main(int argc, char* argv[]) {
 		size_t bytes = N * N * sizeof(float);
 
 		printf("Ocupação tamanho da Matriz %ld\n", bytes);
-
-		float *h_a, *h_b, *h_cpu, *h_naive, *h_tiled;
+		
+		//float *h_cpu;
+		float *h_a, *h_b, *h_naive, *h_tiled;
 		float *d_a, *d_b, *d_naive, *d_tiled;
-		float time_cpu;
+		//float time_cpu;
 
 		h_a = (float*) malloc(bytes);
 		h_b = (float*) malloc(bytes);
@@ -85,13 +86,12 @@ int main(int argc, char* argv[]) {
 		//checkResults(h_cpu, h_naive, N*N);
 		//checkResults(h_cpu, h_tiled, N*N);
 		
-		//free(h_cpu); 
+		//free(h_cpu);
+		free(h_tiled); free(h_naive); free(h_a); free(h_b); 
+    	cudaFree(d_naive); cudaFree(d_tiled); cudaFree(d_a); cudaFree(d_b); 
 		
 	}
 	
-	free(h_tiled); free(h_naive); free(h_a); free(h_b); 
-    cudaFree(d_naive); cudaFree(d_tiled); cudaFree(d_a); cudaFree(d_b);
-    
     return 0;
 }
 

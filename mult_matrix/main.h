@@ -14,9 +14,6 @@ int main(int argc, char* argv[]) {
 	
 	for (int i = 0; i < results.size(); ++i) {
 	
-		float elapsed_time;
-		cudaEvent_t start, stop;
-	
 		int N = results[i];
 
 		size_t bytes = N * N * sizeof(float);

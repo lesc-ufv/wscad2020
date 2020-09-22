@@ -1,8 +1,7 @@
 
-
 int SHMEM_SIZE = 1024;
 
-#include "kernel.h"
+#include "include.h"
 
 int main(int argc, char* argv[]) { 
 

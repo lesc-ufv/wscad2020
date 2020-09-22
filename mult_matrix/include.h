@@ -8,3 +8,5 @@ using namespace std;
 
 #include "init.h"
 #include "verify.h"
+#include "kernel.h"
+#include "time_analisys.h"

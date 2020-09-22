@@ -85,6 +85,7 @@ int main(int argc, char* argv[]) {
 
 		int SHMEM_SIZE = N;
 
+		/*
 		elapsed_time = 0.0;
 		//# Launch kernel Tiled
 		cudaEventCreate(&start);                          
@@ -95,6 +96,7 @@ int main(int argc, char* argv[]) {
 		cudaEventRecord(stop);                        
 		cudaEventSynchronize(stop);                        
 		cudaEventElapsedTime(&elapsed_time, start, stop); 
+		*/
 		
 		cudaMemcpy(h_tiled, d_tiled, bytes, cudaMemcpyDeviceToHost);
 		printf("Time GPU tiled: %7.2lf ms\n", elapsed_time);

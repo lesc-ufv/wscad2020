@@ -68,6 +68,7 @@ int main(int argc, char* argv[]) {
 
 		printf("Size: %dx%d\n", N, N);
 
+		elapsed_time = 0.0;
 		//# Launch kernel Naive
 		cudaEventCreate(&start);                          
 		cudaEventCreate(&stop);                          
@@ -86,6 +87,7 @@ int main(int argc, char* argv[]) {
 
 		int SHMEM_SIZE = N;
 
+		elapsed_time = 0.0;
 		//# Launch kernel Tiled
 		cudaEventCreate(&start);                          
 		cudaEventCreate(&stop);                          

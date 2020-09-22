@@ -2,18 +2,18 @@
 #define __TIME_ANALISYS__H
 
 float elapsed_time;
-cudaEvent_t _start, _stop;                             //# Declara dois eventos
+cudaEvent_t start, stop;                             //# Declara dois eventos
 
 void time_start(){
-  cudaEventCreate(&_start);                          //# Irá marcar o inicio da execucao
-  cudaEventCreate(&_stop);                           //# Irá  marcar o final da execucao
-  cudaEventRecord(_start, 0);                        //# insere na fila 
+  cudaEventCreate(&start);                          //# Irá marcar o inicio da execucao
+  cudaEventCreate(&stop);                           //# Irá  marcar o final da execucao
+  cudaEventRecord(start, 0);                        //# insere na fila 
 }
 
 void time_end() {
-  cudaEventRecord(_stop, 0);                          //# insere na fila
-  cudaEventSynchronize(_stop);                        //# espera terminar
-  cudaEventElapsedTime(&elapsed_time, _start, _stop);  //# calcula
+  cudaEventRecord(stop, 0);                          //# insere na fila
+  cudaEventSynchronize(stop);                        //# espera terminar
+  cudaEventElapsedTime(&elapsed_time, start, stop);  //# calcula
 }
 
 #endif

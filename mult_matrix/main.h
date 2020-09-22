@@ -65,20 +65,20 @@ int main(int argc, char* argv[]) {
 		printf("Size: %dx%d\n", N);
 
 		//# Launch kernel Naive
-		time_start(i); 
+		time_start(); 
 		matrixMul_naive<<<blocks, threads>>>(d_naive, d_a, d_b, N);
 		cudaDeviceSynchronize();
-		time_end(i);
+		time_end();
 		cudaMemcpy(h_naive, d_naive, bytes, cudaMemcpyDeviceToHost);
 		printf("Time GPU naive: %7.2lf ms\n", elapsed_time);
 
 		int SHMEM_SIZE = N;
 
 		//# Launch kernel Tiled
-		time_start(i); 
+		time_start(); 
 		matrixMul_tiled<<<blocks, threads, SHMEM_SIZE>>>(d_tiled, d_a, d_b, N);
 		cudaDeviceSynchronize();
-		time_end(i);
+		time_end();
 		cudaMemcpy(h_tiled, d_tiled, bytes, cudaMemcpyDeviceToHost);
 		printf("Time GPU tiled: %7.2lf ms\n", elapsed_time);
 

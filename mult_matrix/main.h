@@ -2,6 +2,7 @@
 const int SHMEM_SIZE = 4096;
 
 #include "include.h"
+#include <fstream>
 
 int main(int argc, char* argv[]) { 
 
@@ -9,6 +10,15 @@ int main(int argc, char* argv[]) {
     cudaGetDeviceProperties(&deviceProp, 0);
     printf("device %d: %s \n", 0, deviceProp.name);
     cudaSetDevice(0);
+
+	ofstream myfile;
+	myfile.open ("results_matrix.csv");
+
+	for (int i = 0; i < results.size(); ++i) {
+		myfile << results[i];
+		if (i == results.size()-1) myfile << "\n";
+		else myfile << ",";
+	}
     
     //clock_t time_clock;
 	
@@ -64,7 +74,7 @@ int main(int argc, char* argv[]) {
 		dim3 threads(THREADS, THREADS);
 		dim3 blocks(BLOCKS, BLOCKS);
 
-		printf("Blocks: %d\nThreads/blocks: %d\nThreads(total): %d\n\n", BLOCKS, THREADS, THREADS*BLOCKS);
+		//printf("Blocks: %d\nThreads/blocks: %d\nThreads(total): %d\n\n", BLOCKS, THREADS, THREADS*BLOCKS);
 
 		//printf("Time cpu:       %.2lf ms\n", time_cpu);
 
@@ -78,6 +88,7 @@ int main(int argc, char* argv[]) {
 		
 		cudaMemcpy(h_naive, d_naive, bytes, cudaMemcpyDeviceToHost);
 		printf("Time GPU naive: %7.2lf ms\n", elapsed_time);
+		myfile << elapsed_time << ",";
 
 		//# Launch kernel Tiled
 		time_start();
@@ -86,7 +97,8 @@ int main(int argc, char* argv[]) {
 		time_end();
 		
 		cudaMemcpy(h_tiled, d_tiled, bytes, cudaMemcpyDeviceToHost);
-		printf("Time GPU tiled: %7.2lf ms\n", elapsed_time);
+		printf("Time GPU tiled: %7.2lf ms\n\n", elapsed_time);
+		myfile << elapsed_time << "\n";
 
 		//checkResults(h_cpu, h_naive, N*N);
 		//checkResults(h_cpu, h_tiled, N*N);
@@ -95,6 +107,7 @@ int main(int argc, char* argv[]) {
 		free(h_tiled); free(h_naive); free(h_a); free(h_b); 
     	cudaFree(d_naive); cudaFree(d_tiled); cudaFree(d_a); cudaFree(d_b); 
 	}
+	myfile.close();
 	
     return 0;
 }

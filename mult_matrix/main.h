@@ -76,6 +76,7 @@ int main(int argc, char* argv[]) {
 		//# Launch kernel Naive
 		time_start();
 		matrixMul_naive<<<blocks, threads>>>(d_naive, d_a, d_b, N);
+		cudaDeviceSynchronize();
 		time_end();
 		
 		cudaMemcpy(h_naive, d_naive, bytes, cudaMemcpyDeviceToHost);
@@ -84,6 +85,7 @@ int main(int argc, char* argv[]) {
 		//# Launch kernel Tiled
 		time_start();
 		matrixMul_tiled<<<blocks, threads>>>(d_tiled, d_a, d_b, N);
+		cudaDeviceSynchronize();
 		time_end();
 		
 		cudaMemcpy(h_tiled, d_tiled, bytes, cudaMemcpyDeviceToHost);

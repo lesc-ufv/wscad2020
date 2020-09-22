@@ -14,7 +14,10 @@ int main(int argc, char* argv[]) {
 	ofstream myfile;
 	myfile.open ("results_matrix.csv");
     
-    //clock_t time_clock;
+    for (int i = 0; i < 2; ++i) {
+		myfile << i << ",";
+	}
+	myfile << 2 << "\n";
 	
 	for (int i = 0; i < results.size(); ++i) {
 	

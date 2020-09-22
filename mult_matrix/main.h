@@ -7,6 +7,8 @@ int main(int argc, char* argv[]) {
     cudaGetDeviceProperties(&deviceProp, 0);
     printf("device %d: %s \n", 0, deviceProp.name);
     cudaSetDevice(0);
+    
+    clock_t time_clock;
 	
 	for (int i = 0; i < results.size(); ++i) {
 	
@@ -44,10 +46,10 @@ int main(int argc, char* argv[]) {
 		cudaMemcpy(d_tiled, h_tiled, bytes, cudaMemcpyHostToDevice);
 
 		// cpu execution
-		start = clock(); 
+		time_clock = clock(); 
 		cpu_mmatrix(h_cpu, h_a, h_b, N);
-		end = clock() - start;
-		time_cpu = 1000*((float)end) / CLOCKS_PER_SEC;
+		time_clock = clock() - time_clock;
+		time_cpu = 1000*((float)time_clock) / CLOCKS_PER_SEC;
 
 		// Threads per CTA dimension
 		int THREADS = 32;

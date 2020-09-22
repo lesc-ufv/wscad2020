@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
 
 		initDataRandom(h_a, N*N);
 		initDataRandom(h_b, N*N);
-		memset(h_cpu, 0, bytes);
+		//memset(h_cpu, 0, bytes);
 		memset(h_naive, 0, bytes);
 		memset(h_tiled, 0, bytes);
 
@@ -88,7 +88,8 @@ int main(int argc, char* argv[]) {
 		//checkResults(h_cpu, h_naive, N*N);
 		//checkResults(h_cpu, h_tiled, N*N);
 		
-		free(h_cpu); free(h_tiled); free(h_naive); free(h_a); free(h_b); 
+		//free(h_cpu); 
+		free(h_tiled); free(h_naive); free(h_a); free(h_b); 
     	cudaFree(d_naive); cudaFree(d_tiled); cudaFree(d_a); cudaFree(d_b);
 	}
     

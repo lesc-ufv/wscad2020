@@ -6,6 +6,8 @@ int main(int argc, char* argv[]) {
     cudaSetDevice(0);
     
     //clock_t time_clock;
+
+	vector<int> time_gpu;
 	
 	for (int i = 0; i < results.size(); ++i) {
 	
@@ -71,10 +73,10 @@ int main(int argc, char* argv[]) {
 		//# Launch kernel Naive
 		cudaEventCreate(&start);                          
 		cudaEventCreate(&stop);                          
-		cudaEventRecord(start, 0);
+		cudaEventRecord(start);
 		matrixMul_naive<<<blocks, threads>>>(d_naive, d_a, d_b, N);
 		cudaDeviceSynchronize();
-		cudaEventRecord(stop, 0);                        
+		cudaEventRecord(stop);                        
 		cudaEventSynchronize(stop);                        
 		cudaEventElapsedTime(&elapsed_time, start, stop);  
 		
@@ -86,10 +88,10 @@ int main(int argc, char* argv[]) {
 		//# Launch kernel Tiled
 		cudaEventCreate(&start);                          
 		cudaEventCreate(&stop);                          
-		cudaEventRecord(start, 0);
+		cudaEventRecord(start);
 		matrixMul_tiled<<<blocks, threads, SHMEM_SIZE>>>(d_tiled, d_a, d_b, N);
 		cudaDeviceSynchronize();
-		cudaEventRecord(stop, 0);                        
+		cudaEventRecord(stop);                        
 		cudaEventSynchronize(stop);                        
 		cudaEventElapsedTime(&elapsed_time, start, stop); 
 		

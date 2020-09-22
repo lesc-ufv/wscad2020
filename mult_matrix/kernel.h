@@ -30,8 +30,8 @@ __global__ void matrixMul_tiled(float *c, float *a, float *b, int n) {
   int col = blockIdx.x * blockDim.x + threadIdx.x;
 
   // Statically allocated shared memory
-  extern __shared__ int s_a[];
-  extern __shared__ int s_b[];
+  __shared__ int s_a[];
+  __shared__ int s_b[];
 
   // Accumulate in temporary variable
   int tmp = 0;

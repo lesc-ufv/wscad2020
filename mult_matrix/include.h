@@ -7,6 +7,4 @@
 using namespace std;
 
 #include "init.h"
-#include "kernel.h"
 #include "verify.h"
-

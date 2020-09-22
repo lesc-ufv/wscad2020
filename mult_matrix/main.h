@@ -1,5 +1,5 @@
 
-int SHMEM_SIZE = 1024;
+const int SHMEM_SIZE = 4096;
 
 #include "include.h"
 
@@ -18,7 +18,6 @@ int main(int argc, char* argv[]) {
 		cudaEvent_t start, stop;
 	
 		int N = results[i];
-		SHMEM_SIZE = N;
 
 		size_t bytes = N * N * sizeof(float);
 

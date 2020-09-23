@@ -27,7 +27,7 @@ int main() {
   myfile << "mask, Naive , Tiled\n";
   
   int VECTOR_LENGTH = (1 << 28);
-  printf("Tamanho em bytes do vetor: %d\n",bytes_n);
+  printf("Tamanho em bytes do vetor: %d\n", VECTOR_LENGTH * sizeof(int));
   
   for (int k = 0; k < data_mask.size(); ++k) {
 

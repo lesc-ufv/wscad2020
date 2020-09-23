@@ -18,7 +18,7 @@ int main(int argc, char **argv){
     
     ofstream myfile;
 	myfile.open ("results_reduce.csv");
-	myfile << "threads, CPU, Neighbored, Shared, Unrolling8\n";
+	myfile << "threads, Neighbored, Shared, Unrolling8\n";
 
 	for (int j = 0; j < n_threads.size(); ++j) {
 
@@ -59,13 +59,12 @@ int main(int argc, char **argv){
 		cudaMalloc((void **) &d_odata, grid.x * sizeof(int));
 
 		// cpu reduction
-		start = clock();
-		int cpu_sum = recursiveReduce (tmp, size);
-		start = clock() - start;
-		float time_cpu = 1000*((float)start) / CLOCKS_PER_SEC;
-		printf("Time CPU reduce:            %6.2f ms\n", time_cpu, cpu_sum);
-		
-		myfile << time_cpu << ",";
+		//start = clock();
+		//int cpu_sum = recursiveReduce (tmp, size);
+		//start = clock() - start;
+		//float time_cpu = 1000*((float)start) / CLOCKS_PER_SEC;
+		//printf("Time CPU reduce:            %6.2f ms\n", time_cpu, cpu_sum);
+		//myfile << time_cpu << ",";
 
 		//# kernel 1: reduceNeighbored
 		cudaMemcpy(d_idata, h_idata, bytes, cudaMemcpyHostToDevice);
@@ -84,7 +83,7 @@ int main(int argc, char **argv){
 
 		for (int i = 0; i < grid.x; i++) gpu_sum += h_odata[i];
 
-		if(gpu_sum != cpu_sum) printf("Test failed! Value CPU is %d and GPU is %d\n", cpu_sum, gpu_sum);
+		//if(gpu_sum != cpu_sum) printf("Test failed! Value CPU is %d and GPU is %d\n", cpu_sum, gpu_sum);
 
 		//# kernel 1: reduce shared
 		cudaMemcpy(d_idata, h_idata, bytes, cudaMemcpyHostToDevice);
@@ -103,7 +102,7 @@ int main(int argc, char **argv){
 
 		for (int i = 0; i < grid.x; i++) gpu_sum += h_odata[i];
 
-		if(gpu_sum != cpu_sum) printf("Test failed! Value CPU is %d and GPU is %d\n", cpu_sum, gpu_sum);
+		//if(gpu_sum != cpu_sum) printf("Test failed! Value CPU is %d and GPU is %d\n", cpu_sum, gpu_sum);
 
 		//# kernel 6: reduceUnrolling8
 		cudaMemcpy(d_idata, h_idata, bytes, cudaMemcpyHostToDevice);
@@ -131,7 +130,7 @@ int main(int argc, char **argv){
 		// reset device
 		cudaDeviceReset();
 
-		if(gpu_sum != cpu_sum) printf("Test failed! Value CPU is %d and GPU is %d\n", cpu_sum, gpu_sum);
+		//if(gpu_sum != cpu_sum) printf("Test failed! Value CPU is %d and GPU is %d\n", cpu_sum, gpu_sum);
 	}
 	myfile.close();
 

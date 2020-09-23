@@ -1,137 +1,119 @@
-#define SHMEM_SIZE 256 * 4   // memory shared
-
 #include <sys/time.h>
 #include <cuda_runtime.h>
-#include <stdio.h>
+#include <algorithm>
+#include <cassert>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
 #include <fstream>
 
+__constant__ int CONST_MASK[1000];
+
 #include "kernel.h"
+#include "verify_convolution.h"
 #include "time_analisys.h"
 
-int main(int argc, char **argv){
-    // set up device
-    cudaDeviceProp deviceProp;
-    cudaGetDeviceProperties(&deviceProp, 0);
-    printf("device %d: %s \n", 0, deviceProp.name);
-    cudaSetDevice(0);
-    
-    ofstream myfile;
-	myfile.open ("results_conv.csv");
-	myfile << "size, CPU, Neighbored, Shared, Unrolling8\n";
+int main() {
 
-	for (int j = 0; j < data.size(); ++j) {
+  cudaDeviceProp deviceProp;
+  cudaGetDeviceProperties(&deviceProp, 0);
+  cudaSetDevice(0);
+  printf("device %d: %s \n", 0, deviceProp.name);
+  
+  clock_t t_start; 
+  
+  ofstream myfile;
+  myfile.open ("results_conv.csv");
+  myfile << "size, mask, Naive , Tiled\n";
+  
+  for (int j = 0; j < data.size(); ++j){
+  	  int VECTOR_LENGTH = (1 << data[j]);
+  	  for (int k = 0; k < data_mask.size(); ++k) {
 
-		int size = (1 << data[j]); // total number of elements to reduce
+		  int MASK_LENGTH = data_mask[k];
+		  myfile << data[j] << ",";
+		  myfile << MASK_LENGTH << ",";
 
-		// execution configuration
-		int blocksize = 512;   // initial block size
+		  int n = VECTOR_LENGTH;
+		  int r = MASK_LENGTH / 2;
 
-		dim3 block (blocksize, 1);
-		dim3 grid  ((size + block.x - 1) / block.x, 1);
+		  int bytes_n = n * sizeof(int);
+		  int bytes_m = MASK_LENGTH * sizeof(int);
 
-		// allocate host memory
-		size_t bytes = size * sizeof(int);
-		int *h_idata = (int *) malloc(bytes);
-		int *h_odata = (int *) malloc(grid.x * sizeof(int));
-		int *tmp     = (int *) malloc(bytes);
+		  printf("Tamanho em bytes do vetor: %d\n",bytes_n);
 
-		printf("Tamanho do vetor: %d \n", size);
-		printf("Espaço ocupado do vetor em bytes: %d \n", bytes);
+		  std::vector<int> h_array(n);
 
-		//printf("Blocks: %d\nThreads/blocks: %d\nThreads(total): %d\n\n", grid.x, block.x, grid.x*block.x);
-		
-		// initialize the array 
-		for (int i = 0; i < size; i++){
-		    h_idata[i] = (int)( rand() & 0xFF ); // mask off high 2 bytes to force max number to 255
-		}
+		  // ... and initialize it
+		  std::generate(begin(h_array), end(h_array), [](){ return rand() % 100; });
 
-		memcpy(tmp, h_idata, bytes);
-		
-		float start;
-		int gpu_sum = 0;
+		  // Allocate the mask and initialize it
+		  int *h_mask = new int[MASK_LENGTH];
+		  for (int i = 0; i < MASK_LENGTH; i++) { h_mask[i] = rand() % 10; }
 
-		// allocate device memory
-		int *d_idata = NULL;
-		int *d_odata = NULL;
-		cudaMalloc((void **) &d_idata, bytes);
-		cudaMalloc((void **) &d_odata, grid.x * sizeof(int));
+		  // Allocate space for the result
+		  std::vector<int> h_result(n);
+		  std::vector<int> h_result2(n);
 
-		// cpu reduction
-		start = clock();
-		int cpu_sum = recursiveReduce (tmp, size);
-		start = clock() - start;
-		float time_cpu = 1000*((float)start) / CLOCKS_PER_SEC;
-		printf("Time CPU reduce:            %6.2f ms\n", time_cpu, cpu_sum);
-		
-		myfile << time_cpu << ",";
+		  // Allocate space on the device
+		  int *d_array, *d_mask, *d_result, *d_result2;
+		  cudaMalloc(&d_array, bytes_n);
+		  cudaMalloc(&d_mask, bytes_m);
+		  cudaMalloc(&d_result, bytes_n);
+		  cudaMalloc(&d_result2, bytes_n);
 
-		//# kernel 1: reduceNeighbored
-		cudaMemcpy(d_idata, h_idata, bytes, cudaMemcpyHostToDevice);
-		
-		time_start();
-		reduceNeighbored<<<grid, block>>>(d_idata, d_odata, size);
-		cudaDeviceSynchronize();
-		time_end();
+		  // Copy the data to the device
+		  cudaMemcpy(d_array, h_array.data(), bytes_n, cudaMemcpyHostToDevice);
+		  cudaMemcpy(d_mask, h_mask, bytes_m, cudaMemcpyHostToDevice);
 
-		printf("Time GPU reduce Neighbored: %6.2lf ms\n", elapsed_time);
-		
-		myfile << elapsed_time << ",";
+		  // Threads per TB
+		  int THREADS = 256;
 
-		cudaMemcpy(h_odata, d_odata, grid.x * sizeof(int), cudaMemcpyDeviceToHost);
-		gpu_sum = 0;
+		  // Number of TBs
+		  int BLOCKS = (n + THREADS - 1) / THREADS;
 
-		for (int i = 0; i < grid.x; i++) gpu_sum += h_odata[i];
+		  //printf("Blocks: %d\nThreads/blocks: %d\nThreads(total): %d\n\n", BLOCKS, THREADS, THREADS*BLOCKS);
 
-		if(gpu_sum != cpu_sum) printf("Test failed! Value CPU is %d and GPU is %d\n", cpu_sum, gpu_sum);
+		  time_start();
+		  //# Call the kernel naive
+		  convolution_1d_naive<<<BLOCKS, THREADS>>>(d_array, d_mask, d_result, n, MASK_LENGTH);
+		  cudaDeviceSynchronize();
+		  //#-----------------------
+		  time_end();
 
-		//# kernel 1: reduce shared
-		cudaMemcpy(d_idata, h_idata, bytes, cudaMemcpyHostToDevice);
-		
-		time_start();
-		reduceShared<<<grid, block>>>(d_idata, d_odata, size);
-		cudaDeviceSynchronize();
-		time_end();
+		  cudaMemcpy(h_result.data(), d_result, bytes_n, cudaMemcpyDeviceToHost);
 
-		printf("Time GPU reduce Shared:    %7.2lf ms\n", elapsed_time);
-		
-		myfile << elapsed_time << ",";
+		  float time_gpu_naive = 1000 * ((float)(clock() - t_start)) / CLOCKS_PER_SEC;
 
-		cudaMemcpy(h_odata, d_odata, grid.x * sizeof(int), cudaMemcpyDeviceToHost);
-		gpu_sum = 0;
+		  verify_result(h_array.data(), h_mask, h_result.data(), n); // Verify the result
 
-		for (int i = 0; i < grid.x; i++) gpu_sum += h_odata[i];
+		  size_t SHMEM = (THREADS + r*2) * sizeof(int);
 
-		if(gpu_sum != cpu_sum) printf("Test failed! Value CPU is %d and GPU is %d\n", cpu_sum, gpu_sum);
+		  //printf("Blocks: %d\nThreads/blocks: %d\nThreads(total): %d\nMSHARED: %d\n\n", BLOCKS, THREADS, THREADS*BLOCKS, SHMEM);
 
-		//# kernel 6: reduceUnrolling8
-		cudaMemcpy(d_idata, h_idata, bytes, cudaMemcpyHostToDevice);
-		
-		time_start();
-		reduceUnrolling8<<<grid.x / 8, block>>>(d_idata, d_odata, size);
-		cudaDeviceSynchronize();
-		time_end();
-		printf("Time GPU reduce Unrolling: %7.2lf ms\n", elapsed_time);
-		
-		myfile << elapsed_time << "\n";
-		
-		cudaMemcpy(h_odata, d_odata, grid.x / 8 * sizeof(int), cudaMemcpyDeviceToHost);
-		gpu_sum = 0;
-		for (int i = 0; i < grid.x / 8; i++) gpu_sum += h_odata[i];
+		  printf("Time GPU naive: %.2lf ms\n", elapsed_time);
+		  myfile << elapsed_time << ",";
 
-		// free host memory
-		free(h_idata);
-		free(h_odata);
+		  time_start(); 
+		  //# Call the kernel tiled
+		  convolution_1d_tiled<<<BLOCKS, THREADS, SHMEM>>>(d_array, d_mask, d_result2, n, MASK_LENGTH);
+		  cudaDeviceSynchronize();
+		  //#-----------------------
+		  time_end();
+		  printf("Time GPU tiled: %.2lf ms\n", elapsed_time);
+		  myfile << elapsed_time << "\n";
 
-		// free device memory
-		cudaFree(d_idata);
-		cudaFree(d_odata);
+		  cudaMemcpy(h_result2.data(), d_result2, bytes_n, cudaMemcpyDeviceToHost);
 
-		// reset device
-		cudaDeviceReset();
+		  float time_gpu_tiled = 1000 * ((float)(clock() - t_start)) / CLOCKS_PER_SEC;
 
-		if(gpu_sum != cpu_sum) printf("Test failed! Value CPU is %d and GPU is %d\n", cpu_sum, gpu_sum);
-	}
-	myfile.close();
+		  //verify_result(h_array.data(), h_mask, h_result2.data(), n); // Verify the result
 
-    return EXIT_SUCCESS;
+		  // Free allocated memory on the device and host
+		  cudaFree(d_result); cudaFree(d_result2); cudaFree(d_mask); cudaFree(d_array);
+	  }
+  }
+  myfile.close();
+
+  return 0;
 }

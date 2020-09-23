@@ -1,107 +1,69 @@
-__global__ void reduceNeighbored (int *g_idata, int *g_odata, unsigned int n){
-    // set thread ID
-    unsigned int tid = threadIdx.x;
-    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+__global__ void convolution_1d_naive(int *array, int *mask, int *result, int n, int MASK_LENGTH) {
+  // Global thread ID calculation
+  int tid = blockIdx.x * blockDim.x + threadIdx.x;
 
-    // convert global data pointer to the local pointer of this block
-    int *idata = g_idata + blockIdx.x * blockDim.x;
+  // Calculate radius of the mask
+  int r = MASK_LENGTH / 2;
 
-    // boundary check
-    if (idx >= n) return;
+  // Calculate the starting point for the element
+  int start = tid - r;
 
-    // in-place reduction in global memory
-    for (int stride = 1; stride < blockDim.x; stride *= 2){
-        if ((tid % (2 * stride)) == 0)
-        {
-            idata[tid] += idata[tid + stride];
-        }
+  // Temp value for calculation
+  int temp = 0;
 
-        // synchronize within threadblock
-        __syncthreads();
+  // Go over each element of the mask
+  for (int j = 0; j < MASK_LENGTH; j++) {
+    // Ignore elements that hang off (0s don't contribute)
+    if (((start + j) >= 0) && (start + j < n)) {
+      // accumulate partial results
+      temp += array[start + j] * mask[j];
     }
+  }
 
-    // write result for this block to global mem
-    if (tid == 0) g_odata[blockIdx.x] = idata[0];
+  // Write-back the results
+  result[tid] = temp;
 }
 
-__global__ void reduceUnrolling8 (int *g_idata, int *g_odata, unsigned int n){
-    // set thread ID
-    unsigned int tid = threadIdx.x;
-    unsigned int idx = blockIdx.x * blockDim.x * 8 + threadIdx.x;
+__global__ void convolution_1d_tiled(int *array, int *mask, int *result, int n, int MASK_LENGTH) {
+  // Global thread ID calculation
+  int tid = blockIdx.x * blockDim.x + threadIdx.x;
 
-    // convert global data pointer to the local pointer of this block
-    int *idata = g_idata + blockIdx.x * blockDim.x * 8;
+  // Store all elements needed to compute output in shared memory
+  extern __shared__ int s_array[];
 
-    // unrolling 8
-    if (idx + 7 * blockDim.x < n){
-        int a1 = g_idata[idx];
-        int a2 = g_idata[idx + blockDim.x];
-        int a3 = g_idata[idx + 2 * blockDim.x];
-        int a4 = g_idata[idx + 3 * blockDim.x];
-        int b1 = g_idata[idx + 4 * blockDim.x];
-        int b2 = g_idata[idx + 5 * blockDim.x];
-        int b3 = g_idata[idx + 6 * blockDim.x];
-        int b4 = g_idata[idx + 7 * blockDim.x];
-        g_idata[idx] = a1 + a2 + a3 + a4 + b1 + b2 + b3 + b4;
-    }
+  // r: The number of padded elements on either side
+  int r = MASK_LENGTH / 2;
 
-    __syncthreads();
+  // d: The total number of padded elements
+  int d = 2 * r;
 
-    // in-place reduction in global memory
-    for (int stride = blockDim.x / 2; stride > 0; stride >>= 1){
-        if (tid < stride){
-            idata[tid] += idata[tid + stride];
-        }
+  // Size of the padded shared memory array
+  int n_padded = blockDim.x + d;
 
-        // synchronize within threadblock
-        __syncthreads();
-    }
+  // Offset for the second set of loads in shared memory
+  int offset = threadIdx.x + blockDim.x;
 
-    // write result for this block to global mem
-    if (tid == 0) g_odata[blockIdx.x] = idata[0];
-}
+  // Global offset for the array in DRAM
+  int g_offset = blockDim.x * blockIdx.x + offset;
 
+  // Load the lower elements first starting at the halo
+  // This ensure divergence only once
+  s_array[threadIdx.x] = array[tid];
 
-__global__ void reduceShared(int *v, int *v_r, unsigned int n) {
-	// Allocate shared memory
-	__shared__ int partial_sum[SHMEM_SIZE];
+  // Load in the remaining upper elements
+  if (offset < n_padded) {
+    s_array[offset] = array[g_offset];
+  }
+  __syncthreads();
 
-	// Calculate thread ID
-	int tid = blockIdx.x * blockDim.x + threadIdx.x;
+  // Temp value for calculation
+  int temp = 0;
 
-	// Load elements into shared memory
-	partial_sum[threadIdx.x] = v[tid];
-	__syncthreads();
+  // Go over each element of the mask
+  for (int j = 0; j < MASK_LENGTH; j++) {
+    temp += s_array[threadIdx.x + j] * mask[j];
+  }
 
-	// Start at 1/2 block stride and divide by two each iteration
-	for (int s = blockDim.x / 2; s > 0; s >>= 1) {
-		// Each thread does work unless it is further than the stride
-		if (threadIdx.x < s) {
-			partial_sum[threadIdx.x] += partial_sum[threadIdx.x + s];
-		}
-		__syncthreads();
-	}
-
-	// Let the thread 0 for this block write it's result to main memory
-	// Result is inexed by this block
-	if (threadIdx.x == 0) {
-		v_r[blockIdx.x] = partial_sum[0];
-	}
-}
-
-// Recursive Implementation of Interleaved Pair Approach
-int recursiveReduce(int *data, int const size){
-    // terminate check
-    if (size == 1) return data[0];
-
-    // renew the stride
-    int const stride = size / 2;
-
-    // in-place reduction
-    for (int i = 0; i < stride; i++){
-        data[i] += data[i + stride];
-    }
-
-    // call recursively
-    return recursiveReduce(data, stride);
+  // Write-back the results
+  result[tid] = temp;
 }

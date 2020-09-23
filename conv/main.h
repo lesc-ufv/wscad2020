@@ -1,13 +1,12 @@
-%%gpu -O3
-
 #define SHMEM_SIZE 256 * 4   // memory shared
 
 #include <sys/time.h>
 #include <cuda_runtime.h>
 #include <stdio.h>
+#include <fstream>
+
 #include "kernel.h"
 #include "time_analisys.h"
-#include <fstream>
 
 int main(int argc, char **argv){
     // set up device

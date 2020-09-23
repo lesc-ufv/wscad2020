@@ -15,11 +15,11 @@ int main(int argc, char* argv[]) {
 	myfile.open ("results_matrix.csv");
 	myfile << "size" << ",Naive" << ",Tiled\n";
 	
-	for (int i = 0; i < results.size(); ++i) {
+	for (int i = 0; i < data.size(); ++i) {
 	
-		int N = results[i];
+		int N = data[i];
 
-		myfile << results[i] << ",";
+		myfile << N << ",";
 
 		size_t bytes = N * N * sizeof(float);
 

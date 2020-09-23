@@ -85,7 +85,7 @@ int main() {
 
 		  float time_gpu_naive = 1000 * ((float)(clock() - t_start)) / CLOCKS_PER_SEC;
 
-		  verify_result(h_array.data(), h_mask, h_result.data(), n); // Verify the result
+		  //verify_result(h_array.data(), h_mask, h_result.data(), n, MASK_LENGTH); // Verify the result
 
 		  size_t SHMEM = (THREADS + r*2) * sizeof(int);
 
@@ -107,7 +107,7 @@ int main() {
 
 		  float time_gpu_tiled = 1000 * ((float)(clock() - t_start)) / CLOCKS_PER_SEC;
 
-		  //verify_result(h_array.data(), h_mask, h_result2.data(), n); // Verify the result
+		  //verify_result(h_array.data(), h_mask, h_result2.data(), n, MASK_LENGTH); // Verify the result
 
 		  // Free allocated memory on the device and host
 		  cudaFree(d_result); cudaFree(d_result2); cudaFree(d_mask); cudaFree(d_array);

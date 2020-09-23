@@ -1,5 +1,5 @@
 // Verify the result on the CPU
-void verify_result(int *array, int *mask, int *result, int n) {
+void verify_result(int *array, int *mask, int *result, int n, int MASK_LENGTH) {
   int radius = MASK_LENGTH / 2;
   int temp;
   int start;

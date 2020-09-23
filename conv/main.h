@@ -21,7 +21,7 @@ int main(int argc, char **argv){
 
 	for (int j = 0; j < data.size(); ++j) {
 
-		int size = 1 << data[i]; // total number of elements to reduce
+		int size = (1 << data[j]); // total number of elements to reduce
 
 		// execution configuration
 		int blocksize = 512;   // initial block size

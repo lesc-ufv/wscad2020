@@ -14,19 +14,19 @@ int main(int argc, char **argv){
     cudaGetDeviceProperties(&deviceProp, 0);
     printf("device %d: %s \n", 0, deviceProp.name);
     cudaSetDevice(0);
+    int size = (1 << 28); 
     
     ofstream myfile;
 	myfile.open ("results_reduce.csv");
-	myfile << "size, CPU, Neighbored, Shared, Unrolling8\n";
+	myfile << "threads, CPU, Neighbored, Shared, Unrolling8\n";
 
-	for (int j = 0; j < data.size(); ++j) {
+	for (int j = 0; j < n_threads.size(); ++j) {
 
-		int size = (1 << data[j]); // total number of elements to reduce
-		
-		myfile << data[j] << ",";
+		// total number of elements to reduce
+		myfile << n_threads[j] << ",";
 
 		// execution configuration
-		int blocksize = 512;   // initial block size
+		int blocksize = n_threads[j];   // initial block size
 
 		dim3 block (blocksize, 1);
 		dim3 grid  ((size + block.x - 1) / block.x, 1);

@@ -34,7 +34,7 @@ void printDevProp(cudaDeviceProp devProp){
     printf("GPU Max Clock Rate:                            %.1f MHz (%.2f GHz)\n", devProp.clockRate/1000.0, devProp.clockRate/1000000.0);
     printf("Memory Clock Rate:                             %.1f MHz\n", devProp.memoryClockRate / 1000.0);
     printf("Memory Bus Width:                              %d bit\n", devProp.memoryBusWidth);
-    printf("L2 Cache Size:                                 %d bytes\n", devProp.l2CacheSize);
+    printf("L2 Cache Size:                                 %.1f (%d bytes)\n", devProp.l2CacheSize/1048576.0, devProp.l2CacheSize);
     printf("Maximum Texture Dimension Size (x,y,z):        1D=(%d), 2D(%d, %d), 3D(%d, %d, %d)\n", devProp.maxTexture1D, devProp.maxTexture2D[0], devProp.maxTexture2D[1], devProp.maxTexture3D[0], devProp.maxTexture3D[1], devProp.maxTexture3D[2]);
     printf("Maximum Layered 1D Texture Size, (num) layers: 1D=(%d), %d layers\n", devProp.maxTexture1DLayered[0], devProp.maxTexture1DLayered[1]);
     printf("Maximum Layered 2D Texture Size, (num) layers  2D=(%d, %d), %d layers\n", devProp.maxTexture2DLayered[0], devProp.maxTexture2DLayered[1], devProp.maxTexture2DLayered[2]);

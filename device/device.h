@@ -63,7 +63,7 @@ void printDevProp(cudaDeviceProp devProp){
     return;
 }
  
-int device() {
+void device_info() {
     // Number of CUDA devices
     int devCount;
     cudaGetDeviceCount(&devCount);
@@ -78,6 +78,4 @@ int device() {
         cudaGetDeviceProperties(&devProp, i);
         printDevProp(devProp);
     }
- 
-    return 0;
 }

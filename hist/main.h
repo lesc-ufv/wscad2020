@@ -98,13 +98,12 @@ int main() {
 	  myfile << elapsed_time << "\n";
 
 	  cudaMemcpy(h_result_shared.data(), d_result, BINS * sizeof(int), cudaMemcpyDeviceToHost);
-	  float time_gpu_shared = 1000 * ((float)(clock() - t_start)) / CLOCKS_PER_SEC;
 
 	  // Functional test (the sum of all bins == N)
 	  assert(N == accumulate(begin(h_result), end(h_result), 0));
 	  
 	  ofstream f;
-	  f.open ("histogram_%d.txt", data_bin[i]);
+	  f.open ("histogram_%d.txt", data_bin[j]);
 	  printf("\nHistogram\n");
 	  for (int i = 0; i < BINS; ++i) {
 	  	  f << i << " " << h_result[i] << "\n";

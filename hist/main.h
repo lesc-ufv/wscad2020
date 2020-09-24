@@ -31,12 +31,13 @@ int main() {
   cudaSetDevice(0);
   printf("device %d: %s \n", 0, deviceProp.name);
   
+  ofstream myfile;
   myfile.open ("results_hist.csv");
   myfile << "bins, atomic, shared\n";
 
   for (int j = 0; j < data_bin.size(); ++j) {
   
-  	  int BINS = data_bin[i];
+  	  int BINS = data_bin[j];
   	  
   	  myfile << BINS << ",";
   	  
@@ -86,7 +87,6 @@ int main() {
 	  myfile << elapsed_time << ",";
 
 	  cudaMemcpy(h_result.data(), d_result, BINS * sizeof(int), cudaMemcpyDeviceToHost);
-	  float time_gpu_atomic = 1000 * ((float)(clock() - t_start)) / CLOCKS_PER_SEC;
 
 	  time_start();
 	  //#----------- Launch the kernel shared
@@ -103,6 +103,7 @@ int main() {
 	  // Functional test (the sum of all bins == N)
 	  assert(N == accumulate(begin(h_result), end(h_result), 0));
 	  
+	  ofstream f;
 	  f.open ("histogram_%d.txt", data_bin[i]);
 	  printf("\nHistogram\n");
 	  for (int i = 0; i < BINS; ++i) {

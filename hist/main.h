@@ -90,7 +90,7 @@ int main() {
 
 	  time_start();
 	  //#----------- Launch the kernel shared
-	  histogram_shared<<<BLOCKS, THREADS>>>(d_input, d_result_shared, N);
+	  histogram_shared<<<BLOCKS, THREADS>>>(d_input, d_result_shared, N, BINS, DIV);
 	  cudaDeviceSynchronize();
 	  //#----------------------------
 	  time_end();

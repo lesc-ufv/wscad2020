@@ -55,7 +55,7 @@ void printDevProp(cudaDeviceProp devProp){
     printf("Maximum of grid dimension  x:                  %d\n", devProp.maxGridSize[0]);
     printf("Maximum of grid dimension  y:                  %d\n", devProp.maxGridSize[1]);
     printf("Maximum of grid dimension  z:                  %d\n", devProp.maxGridSize[2]);
-    printf("Peak Memory Bandwidth (GB/s):                  %.2f\n", 2.0*devProp.memoryClockRate*(devProp.memoryBusWidth/8)/1.0e6);
+    printf("Peak Memory Bandwidth (GB/s):                  %.1f\n", 2.0*devProp.memoryClockRate*(devProp.memoryBusWidth/8)/1.0e6);
     printf("Texture alignment:                             %u\n", devProp.textureAlignment);
     printf("Concurrent copy and execution:                 %s\n", (devProp.deviceOverlap ? "Yes" : "No"));
     printf("Maximum threads per multiprocessor             %d\n", devProp.maxThreadsPerMultiProcessor);

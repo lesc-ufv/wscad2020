@@ -31,12 +31,15 @@ int main() {
   cudaSetDevice(0);
   printf("device %d: %s \n", 0, deviceProp.name);
   
-  myfile.open ("results_matrix.csv");
+  myfile.open ("results_hist.csv");
   myfile << "bins, atomic, shared\n";
 
   for (int j = 0; j < data_bin.size(); ++j) {
   
   	  int BINS = data_bin[i];
+  	  
+  	  myfile << BINS << ",";
+  	  
   	  int DIV = ((26 + BINS - 1) / BINS);
 
 	  // Declare our problem size
@@ -99,12 +102,15 @@ int main() {
 
 	  // Functional test (the sum of all bins == N)
 	  assert(N == accumulate(begin(h_result), end(h_result), 0));
-
+	  
+	  f.open ("histogram_%d.txt", data_bin[i]);
 	  printf("\nHistogram\n");
 	  for (int i = 0; i < BINS; ++i) {
+	  	  f << i << " " << h_result[i] << "\n";
 		  printf("%d: %d\n", i, h_result[i]);
 	  }
 	  printf("\n");
+	  f.close();
 
 	  // Free memory
 	  cudaFree(d_input); cudaFree(d_result); cudaFree(d_result_shared);

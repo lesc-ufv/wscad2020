@@ -8,12 +8,7 @@
 #include <vector>
 #include <fstream>
 
-using std::accumulate;
-using std::cout;
-using std::generate;
-using std::ios;
-using std::ofstream;
-using std::vector;
+using namespace std;
 
 //# VARIAVEIS
 #define PROBLEM_SIZE 1 << 27
@@ -21,8 +16,6 @@ using std::vector;
 
 #include "kernel.h"
 #include "time_analisys.h"
-
-using namespace std;
 
 int main() {
     
@@ -32,6 +25,7 @@ int main() {
   printf("device %d: %s \n", 0, deviceProp.name);
   
   ofstream myfile;
+  ofstream f;
   myfile.open ("results_hist.csv");
   myfile << "bins, atomic, shared\n";
 
@@ -44,9 +38,7 @@ int main() {
   	  int DIV = ((26 + BINS - 1) / BINS);
 
 	  // Declare our problem size
-	  int N = PROBLEM_SIZE;
-	  
-	  clock_t t_start; 
+	  int N = PROBLEM_SIZE; 
 
 	  // Allocate memory on the host
 	  vector<char> h_input(N);
@@ -102,7 +94,6 @@ int main() {
 	  // Functional test (the sum of all bins == N)
 	  assert(N == accumulate(begin(h_result), end(h_result), 0));
 	  
-	  ofstream f;
 	  f.open ("histogram_%d.txt", data_bin[j]);
 	  printf("\nHistogram\n");
 	  for (int i = 0; i < BINS; ++i) {

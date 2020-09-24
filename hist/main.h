@@ -94,7 +94,7 @@ int main() {
 	  // Functional test (the sum of all bins == N)
 	  assert(N == accumulate(begin(h_result), end(h_result), 0));
 	  
-	  f.open ("histogram_"+ data_bin[j].c_str() +".txt");
+	  f.open ("histogram_"+ to_string(data_bin[j]) +".txt");
 	  printf("\nHistogram\n");
 	  for (int i = 0; i < BINS; ++i) {
 	  	  f << i << " " << h_result[i] << "\n";

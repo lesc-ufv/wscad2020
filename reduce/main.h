@@ -36,7 +36,8 @@ int main(int argc, char **argv){
 		int *h_idata = (int *) malloc(bytes);
 		int *h_odata = (int *) malloc(grid.x * sizeof(int));
 		int *tmp     = (int *) malloc(bytes);
-
+		
+		printf("Nº threads: %d\n", n_threads[j]);
 		printf("Tamanho do vetor: %d \n", size);
 		printf("Espaço ocupado do vetor em bytes: %d \n", bytes);
 
@@ -111,7 +112,7 @@ int main(int argc, char **argv){
 		reduceUnrolling8<<<grid.x / 8, block>>>(d_idata, d_odata, size);
 		cudaDeviceSynchronize();
 		time_end();
-		printf("Time GPU reduce Unrolling: %7.2lf ms\n", elapsed_time);
+		printf("Time GPU reduce Unrolling: %7.2lf ms\n\n", elapsed_time);
 		
 		myfile << elapsed_time << "\n";
 		

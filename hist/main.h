@@ -11,7 +11,7 @@
 using namespace std;
 
 //# VARIAVEIS
-#define PROBLEM_SIZE 1 << 27
+#define PROBLEM_SIZE 1 << 26
 #define BINS_SHARED 1024
 
 #include "kernel.h"

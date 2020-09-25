@@ -61,7 +61,7 @@ void printDevProp(cudaDeviceProp devProp){
     printf("Maximum threads per multiprocessor             %d\n", devProp.maxThreadsPerMultiProcessor);
     printf("Kernel execution timeout:                      %s\n", (devProp.kernelExecTimeoutEnabled ? "Yes" : "No"));
     printf("Theoretical Performance:\n");
-    printf(" FP32 (float) performance:                     %.1f TFLOPS\n", 2*getSPcores(devProp)*(devProp.clockRate/1000000.0)/1000.0);
+    printf(" - FP32 (float) performance:                   %.1f TFLOPS\n", 2*getSPcores(devProp)*(devProp.clockRate/1000000.0)/1000.0);
     return;
 }
  

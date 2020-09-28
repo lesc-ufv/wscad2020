@@ -1,3 +1,4 @@
 * Video: 
 * Texto completo: 
-* Slides: 
+* Slides:
+* Colab: 

@@ -1,3 +1,3 @@
-Video: 
-Texto completo: 
-Slides: 
+* Video: 
+* Texto completo: 
+* Slides: 

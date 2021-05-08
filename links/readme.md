@@ -3,6 +3,8 @@
 * Video Parte I: [Link](https://www.youtube.com/watch?v=WqBL4xjovGE&ab_channel=ERAD-SP2021)
 * Video Parte II: [Link](https://youtu.be/WqBL4xjovGE?t=9202)
 
+Obs.: os slides, texto e colabs são os mesmos do WSCAD 2020
+
 # WSCAD 2020
 
 * Video: [Youtube](https://www.youtube.com/watch?v=JJXmAVnsAMM&t=6343s)
